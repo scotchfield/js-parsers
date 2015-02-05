@@ -1,6 +1,35 @@
-var PostfixParser = (function (x) {
+var PostfixParser = (function () {
+    'use strict';
+
     var input, pos = 0,
 
+    lookahead = function() {
+        return input[pos];
+    },
+    isNumber = function(x) {
+        return (x >= '0' && x <= '9') ? true : false;
+    },
+    match = function (t) {
+        if (lookahead() === t) {
+            pos += 1;
+        } else {
+            throw {
+                e: 'syntax_error',
+                msg: 'syntax error'
+            };
+        }
+    },
+    term = function () {
+        if (isNumber(lookahead())) {
+            process.stdout.write(lookahead());
+            match(lookahead());
+        } else {
+            throw {
+                e: 'syntax_error',
+                msg: 'syntax error'
+            };
+        }
+    },
     expr = function () {
         term();
         while (true) {
@@ -16,33 +45,6 @@ var PostfixParser = (function (x) {
                 return;
             }
         }
-    },
-    term = function () {
-        if (isNumber(lookahead())) {
-            process.stdout.write(lookahead());
-            match(lookahead());
-        } else {
-            throw {
-                e: 'syntax_error',
-                msg: 'syntax error',
-            };
-        }
-    },
-    match = function (t) {
-        if (lookahead() === t) {
-            pos += 1;
-        } else {
-            throw {
-                e: 'syntax_error',
-                msg: 'syntax error',
-            };
-        }
-    },
-    lookahead = function() {
-        return input[pos];
-    },
-    isNumber = function(x) {
-        return (x >= '0' && x <= '9') ? true : false;
     };
 
     return function(x) {
@@ -51,6 +53,6 @@ var PostfixParser = (function (x) {
         console.log('');
     };
 
-})();
+}());
 
-var p = PostfixParser('9-5+2');
+var p = new PostfixParser('9-5+2');
